@@ -6,6 +6,9 @@ package it.polito.tdp.yelp;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+
+import it.polito.tdp.yelp.model.Adiacenza;
+import it.polito.tdp.yelp.model.Business;
 import it.polito.tdp.yelp.model.Model;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -37,10 +40,10 @@ public class FXMLController {
     private TextField txtX2; // Value injected by FXMLLoader
 
     @FXML // fx:id="cmbCitta"
-    private ComboBox<?> cmbCitta; // Value injected by FXMLLoader
+    private ComboBox<String> cmbCitta; // Value injected by FXMLLoader
 
     @FXML // fx:id="cmbB1"
-    private ComboBox<?> cmbB1; // Value injected by FXMLLoader
+    private ComboBox<Business> cmbB1; // Value injected by FXMLLoader
 
     @FXML // fx:id="cmbB2"
     private ComboBox<?> cmbB2; // Value injected by FXMLLoader
@@ -50,13 +53,37 @@ public class FXMLController {
     
     @FXML
     void doCreaGrafo(ActionEvent event) {
+    	String citta=this.cmbCitta.getValue();
+    	if(citta==null) {
+    		this.txtResult.appendText("Selezionare una citta ");
+    		return;
+    	}
+this.model.creaGrafo(citta);
     	
+    	txtResult.appendText("Grafo creato!\n");
+    	txtResult.appendText("# Vertici : " + this.model.nVertici() + "\n");
+    	txtResult.appendText("# Archi : " + this.model.nArchi() + "\n");
+    	this.cmbB1.getItems().clear();
+    	this.cmbB1.getItems().addAll(this.model.getVertici());
+
     }
 
     @FXML
     void doCalcolaLocaleDistante(ActionEvent event) {
-
+    	if(!model.grafoCreato())
+    	{
+    		this.txtResult.appendText("Creare prima il grafo!");
+    		return;
+    	}
+    	Business b=this.cmbB1.getValue();
+    	if(b==null)
+    	{
+    		this.txtResult.appendText("selezionare un locale dalla tendina ");
+    		return;
+    	}
     	
+    	Adiacenza a=model.getAdiacenti(b);
+    	this.txtResult.appendText(a.toString());
     }
 
     @FXML
@@ -80,5 +107,6 @@ public class FXMLController {
     
     public void setModel(Model model) {
     	this.model = model;
+    	this.cmbCitta.getItems().addAll(this.model.citta());
     }
 }
